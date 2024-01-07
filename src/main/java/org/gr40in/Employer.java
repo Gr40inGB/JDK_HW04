@@ -21,6 +21,8 @@ public class Employer {
         this.hiredDate = hiredDate;
     }
 
+
+
     public Employer(String data) {
         Long tempStaffId = null;
         StringBuilder tempName = new StringBuilder();
@@ -28,11 +30,11 @@ public class Employer {
         LocalDate tempHiredDate = null;
         List<String> listData = Arrays.stream(data.split(" ")).toList();
         for (String s : listData) {
-            if (s.matches("[a-zA-Zа-яА-Я]+") && s.length() > 1) tempName.append(s).append(' ');
+            if (s.matches("[a-zA-Zа-яА-Я.]+") && s.length() > 1) tempName.append(s).append(' ');
             else if (s.matches("\\bid\\d+")) tempStaffId = Long.parseLong(s.substring(2));
             else if (s.matches("(0[1-9]|[12][0-9]|3[01])[-\\/.](0[1-9]|1[0-2])[-\\/.](19[0-9][0-9]|20[0-9][0-9])"))
                 tempHiredDate = getValidLocalData(s);
-            else if (s.matches("(\\+?)([8|7|9])(-?)\\d{3}(-?)" +
+            else if (s.matches("(\\+?)([8|7|9])([\\(-]?)\\d{3}([\\)-]?)" +
                     "\\d{1}(-?)\\d{1}(-?)\\d{1}(-?)\\d{1}(-?)\\d{1}(-?)\\d{1}(-?)\\d{1}"))
                 tempPhoneNumber = getValidPhone(s);
         }
@@ -44,9 +46,31 @@ public class Employer {
         } else throw new IllegalArgumentException("wrong data");
     }
 
+    // region Getters
+
+    public Long getStaffId() {
+        return staffId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Long getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public LocalDate getHiredDate() {
+        return hiredDate;
+    }
+
+    //endregion
+
     @Override
     public String toString() {
-        return "id" + staffId + " " + name + phoneNumber + " work since: " + hiredDate.format(formatter);
+        return "id" + String.format("%04d", staffId)
+                + " " + name + "\t" + phoneNumber + "\t" +
+                " work since: " + hiredDate.format(formatter);
     }
 
     private LocalDate getValidLocalData(String stringData) {
@@ -57,7 +81,7 @@ public class Employer {
     }
 
     private Long getValidPhone(String stringData) {
-        String digitString = stringData.replaceAll("[-\\/.]", "");
+        String digitString = stringData.replaceAll("[\\)\\(-\\/.]", "");
         return Long.parseLong(digitString);
     }
 }
